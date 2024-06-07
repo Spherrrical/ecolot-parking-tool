@@ -1,6 +1,9 @@
 import * as cheerio from 'cheerio';
 import { NextRequest, NextResponse } from "next/server";
 
+export const runtime = "edge";
+export const dynamic = "force-dynamic";
+
 const fetchedFlights = new Set();
 
 export async function GET(req: NextRequest, res: NextResponse) {

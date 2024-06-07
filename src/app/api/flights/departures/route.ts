@@ -3,6 +3,9 @@ import { NextRequest, NextResponse } from "next/server";
 
 const fetchedFlights = new Set();
 
+export const runtime = "edge";
+export const dynamic = "force-dynamic";
+
 export async function GET(req: NextRequest, res: NextResponse) {
     const { searchParams } = new URL(req.url);
     const startPage = parseInt(searchParams.get('page') || '1', 10);
