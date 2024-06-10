@@ -18,6 +18,9 @@ const config = {
       },
     },
     extend: {
+      colors: {
+        ecoblue: "#244C6E",
+      },
       fontFamily: {
         'satoshi-bold': ["Satoshi-Bold", "sans-serif"],
         'satoshi-light': ["Satoshi-Light", "sans-serif"],
