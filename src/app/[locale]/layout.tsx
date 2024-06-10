@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "../globals.css";
 import {NextIntlClientProvider} from 'next-intl';
-import {getMessages, unstable_setRequestLocale} from 'next-intl/server';
+import {getMessages} from 'next-intl/server';
 import {LanguageDialog} from "@/components/LanguageDialog";
 
 
@@ -13,13 +13,7 @@ export const metadata: Metadata = {
     description: "Sustainable parking solutions for a greener future",
 };
 
-const locales = ['en', 'es', 'zh', 'so', 'vi', 'fl', 'ar', 'ur', 'pn'];
-
-export function generateStaticParams() {
-    return locales.map((locale) => ({locale}));
-}
-
-export default async function AnotherLayout({children, params: {locale}
+export default async function RootLayout({children, params: {locale}
                                          }: {
     children: React.ReactNode;
     params: {locale: string};
@@ -27,7 +21,6 @@ export default async function AnotherLayout({children, params: {locale}
 
 
     const messages = await getMessages();
-    unstable_setRequestLocale(locale);
 
     return (
         <html lang={locale}>
