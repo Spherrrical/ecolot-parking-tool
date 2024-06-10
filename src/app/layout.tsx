@@ -3,7 +3,6 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import {NextIntlClientProvider} from 'next-intl';
 import {getMessages} from 'next-intl/server';
-import {LanguageDialog} from "@/components/LanguageDialog";
 
 
 const inter = Inter({ subsets: ["latin"] });
@@ -20,15 +19,11 @@ export default async function RootLayout({children, params: {locale}
 }) {
 
 
-  const messages = await getMessages();
-
   return (
     <html lang={locale}>
-      <NextIntlClientProvider messages={messages}>
-        <body className={inter.className}>
-          {children}
-        </body>
-      </NextIntlClientProvider>
+    <body className={inter.className}>
+    {children}
+    </body>
     </html>
   );
 }

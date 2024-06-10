@@ -1,35 +1,34 @@
-import type { Metadata } from "next";
-import { Inter } from "next/font/google";
-import "../globals.css";
 import {NextIntlClientProvider} from 'next-intl';
-import {getMessages} from 'next-intl/server';
-import {LanguageDialog} from "@/components/LanguageDialog";
+import {getMessages, unstable_setRequestLocale} from 'next-intl/server';
 
+const locales = ['en', 'es', 'zh', 'so', 'vi', 'fl', 'ar', 'ur', 'pn'];
 
-const inter = Inter({ subsets: ["latin"] });
+export function generateStaticParams() {
+    return locales.map((locale) => ({locale}));
+}
 
-export const metadata: Metadata = {
-    title: "Eco-Lot",
-    description: "Sustainable parking solutions for a greener future",
-};
-
-export default async function RootLayout({children, params: {locale}
-                                         }: {
+export default async function LocaleLayout({
+                                               children,
+                                               params: {locale}
+                                           }: {
     children: React.ReactNode;
     params: {locale: string};
 }) {
+    unstable_setRequestLocale(locale);
 
 
+
+    // Providing all messages to the client
+    // side is the easiest way to get started
     const messages = await getMessages();
 
     return (
         <html lang={locale}>
-        <NextIntlClientProvider messages={messages}>
-            <body className={inter.className}>
-
-            {children}
+            <body>
+                <NextIntlClientProvider messages={messages}>
+                    {children}
+                </NextIntlClientProvider>
             </body>
-        </NextIntlClientProvider>
         </html>
     );
 }
