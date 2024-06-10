@@ -1,3 +1,4 @@
+'use client';
 import {notFound} from 'next/navigation';
 import {getRequestConfig, unstable_setRequestLocale} from 'next-intl/server';
 

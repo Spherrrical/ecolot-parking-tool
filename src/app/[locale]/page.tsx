@@ -10,8 +10,11 @@ import Link from "next/link";
 import {QuestionForm} from "@/components/Form";
 import {useTranslations} from "next-intl";
 import {LanguageDialog} from "@/components/LanguageDialog";
+import {unstable_setRequestLocale} from "next-intl/server";
 
-export default function Home() {
+// @ts-ignore
+export default function Home({params: {locale}}) {
+    unstable_setRequestLocale(locale);
     const router = useRouter();
     const t = useTranslations('Index');
 

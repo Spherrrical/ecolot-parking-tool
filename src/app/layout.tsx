@@ -4,6 +4,9 @@ import "./globals.css";
 import {NextIntlClientProvider} from 'next-intl';
 import {getMessages} from 'next-intl/server';
 import {LanguageDialog} from "@/components/LanguageDialog";
+import {unstable_setRequestLocale} from 'next-intl/server';
+
+
 
 
 const inter = Inter({ subsets: ["latin"] });
@@ -13,6 +16,12 @@ export const metadata: Metadata = {
   description: "Sustainable parking solutions for a greener future",
 };
 
+const locales = ['en', 'es', 'zh', 'so', 'vi', 'fl', 'ar', 'ur', 'pn'];
+
+export function generateStaticParams() {
+  return locales.map((locale) => ({locale}));
+}
+
 export default async function RootLayout({children, params: {locale}
 }: {
   children: React.ReactNode;
@@ -20,7 +29,10 @@ export default async function RootLayout({children, params: {locale}
 }) {
 
 
+
   const messages = await getMessages();
+
+  unstable_setRequestLocale(locale);
 
   return (
     <html lang={locale}>
