@@ -97,6 +97,7 @@ export default function Home({params: {locale}}: Props) {
                                 <DropdownMenuContent className="w-56">
                                     {languages.map((language) => (
                                         <DropdownMenuItem
+                                            className="font-satoshi-medium text-gray-900 hover:bg-gray-100 hover:text-gray-900"
                                             key={language.locale}
                                             onClick={() => {
                                                 router.push(`/${language.locale}`);
