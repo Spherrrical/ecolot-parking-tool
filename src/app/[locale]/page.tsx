@@ -131,8 +131,7 @@ export default function Home({params: {locale}}: Props) {
                         </p>
                         <div className="mt-10 flex items-center gap-x-4">
                             {/* @ts-ignore */}
-                            <Button
-                                onClick={() => document.getElementById("improving-seattle").scrollIntoView({behavior: "smooth"})}>
+                            <Button onClick={() => document.getElementById("improving-seattle").scrollIntoView({behavior: "smooth"})}>
                                 {t('learnMore')}
                             </Button>
                             <Button asChild variant={"outline"} onClick={() => router.push("/flights")}>
