@@ -9,8 +9,8 @@ import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import {QuestionForm} from "@/components/Form";
 import {useTranslations} from "next-intl";
-import {LanguageDialog} from "@/components/LanguageDialog";
-import {unstable_setRequestLocale} from 'next-intl/server';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuTrigger, DropdownMenuItem } from "@/components/ui/dropdown-menu";
+
 
 type Props = {
     params: {locale: string};
@@ -18,6 +18,18 @@ type Props = {
 
 
 export default function Home({params: {locale}}: Props) {
+    const languages = [
+        { name: "English", locale: "en" },
+        { name: "Spanish", locale: "es" },
+        { name: "Chinese", locale: "zh" },
+        { name: "Tagalog", locale: "fl" },
+        { name: "Urdu", locale: "ur" },
+        { name: "Arabic", locale: "ar" },
+        { name: "Vietnamese", locale: "vi" },
+        { name: "Somali", locale: "so" },
+        { name: "Punjabi", locale: "pn" },
+    ];
+
     const router = useRouter();
     const t = useTranslations('Index');
 
@@ -77,6 +89,26 @@ export default function Home({params: {locale}}: Props) {
                             src="/logo.png"
                             alt="Your Company"
                         />
+                        <div className="mt-4">
+                            <DropdownMenu>
+                                <DropdownMenuTrigger className="text-base bg-neutral-200 p-2 pl-5 pr-5 rounded-full font-satoshi-bold tracking-tight text-gray-900">
+                                    {languages.find((lang) => lang.locale === locale)?.name || "Select Language"}
+                                </DropdownMenuTrigger>
+                                <DropdownMenuContent className="w-56">
+                                    {languages.map((language) => (
+                                        <DropdownMenuItem
+                                            key={language.locale}
+                                            onClick={() => {
+                                                router.push(`/${language.locale}`);
+                                                // unstable_setRequestLocale(language.locale);
+                                            }}
+                                        >
+                                            {language.name}
+                                        </DropdownMenuItem>
+                                    ))}
+                                </DropdownMenuContent>
+                            </DropdownMenu>
+                        </div>
                         {/*<div className="mt-24 sm:mt-32 lg:mt-16">*/}
                         {/*    <a href="#" className="inline-flex space-x-6">*/}
                         {/*      <span*/}
@@ -98,7 +130,8 @@ export default function Home({params: {locale}}: Props) {
                         </p>
                         <div className="mt-10 flex items-center gap-x-4">
                             {/* @ts-ignore */}
-                            <Button onClick={() => document.getElementById("improving-seattle").scrollIntoView({behavior: "smooth"})}>
+                            <Button
+                                onClick={() => document.getElementById("improving-seattle").scrollIntoView({behavior: "smooth"})}>
                                 {t('learnMore')}
                             </Button>
                             <Button asChild variant={"outline"} onClick={() => router.push("/flights")}>
