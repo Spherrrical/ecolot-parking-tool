@@ -202,7 +202,7 @@ export default function Home({params: {locale}}: Props) {
                            </span>
                             </li>
                         </ul>
-                        <Button variant="outline" className="mt-8" onClick={() => router.push("/report")}>
+                        <Button variant="outline" className="mt-8" onClick={() => router.push("https://spherrrical.s3.us-west-2.amazonaws.com/Group+P+Portfolio+Report.pdf")}>
                             {t('readReport')}
                         </Button>
                         <h2 className="mt-16 text-2xl font-satoshi-bold tracking-tight text-gray-900">{t('communityImpactHeading')}</h2>
