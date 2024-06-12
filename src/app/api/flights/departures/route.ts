@@ -1,61 +1,58 @@
 import * as cheerio from 'cheerio';
 import { NextRequest, NextResponse } from "next/server";
 
-const fetchedFlights = new Set();
+interface DepartingFlight {
+    destination: string;
+    airline: string;
+    flight_number: string;
+    date: string;
+    scheduled_time: string;
+    status: string;
+    gate: string;
+    details: string;
+}
 
 export async function GET(req: NextRequest, res: NextResponse) {
     const { searchParams } = new URL(req.url);
-    const startPage = parseInt(searchParams.get('page') || '1', 10);
+    const flightNumber = searchParams.get('flightNumber');
+    const airline = searchParams.get('airline');
+    const date = searchParams.get('date');
 
-    const baseUrl = "https://www.portseattle.org/sea-tac/flight-status?flightNo=&flight_date=&airline=&page={}&arrive_city=&depart_city=&arr_or_depart=D&datetime_start=&datetime_end=&orderby=City";
-    const headers: string[] = [];
-    const flights: {}[] = [];
-
-    let page = startPage;
-    let hasMoreFlights = true;
-
-    while (hasMoreFlights && page <= 36) {
-        const url = baseUrl.replace('{}', String(page));
-        try {
-            const response = await fetch(url);
-            const html = await response.text();
-            const $ = cheerio.load(html);
-
-            if (page === 1) {
-                const headerHtml = $('table.datatable thead');
-                headers.push(...headerHtml.find('th').map((_, el) => $(el).text().trim()).get());
-            }
-
-            const rowHtml = $('table.datatable tbody tr');
-            let newFlightsAdded = false;
-
-            rowHtml.each((_, row) => {
-                const flightData = {};
-                const cells = $(row).find('td');
-                cells.each((i, cell) => {
-                    if (i < headers.length) {
-                        const key = headers[i].toLowerCase().replace(/\s/g, '_').replace('#', '').replace(/_$/, '');
-                        // @ts-ignore
-                        flightData[key] = $(cell).text().trim();
-                    }
-                });
-
-                const flightKey = JSON.stringify(flightData);
-                if (!fetchedFlights.has(flightKey)) {
-                    flights.push(flightData);
-                    fetchedFlights.add(flightKey);
-                    newFlightsAdded = true;
-                }
-            });
-
-            hasMoreFlights = newFlightsAdded;
-            page++;
-        } catch (error) {
-            console.error(`Error fetching data from page ${page}:`, error);
-            hasMoreFlights = false;
-        }
+    if (!flightNumber) {
+        return NextResponse.json({ error: 'Flight number is required.' }, { status: 400 });
     }
 
-    const nextPage = page <= 21 ? page : null;
-    return NextResponse.json({ flights, nextPage }, { status: 200 });
+    const baseUrl = `https://www.portseattle.org/sea-tac/flight-status?flight_date=${date}&arr_or_depart=D&airline=${airline}&depart_city=&flightNo=${flightNumber}&datetime_start=&datetime_end=`;
+    try {
+        const response = await fetch(baseUrl);
+        const html = await response.text();
+        const $ = cheerio.load(html);
+
+        const flightData: DepartingFlight = {
+            destination: '',
+            airline: '',
+            flight_number: '',
+            date: '',
+            scheduled_time: '',
+            status: '',
+            gate: '',
+            details: '',
+        };
+
+        const flightDetail = $('.flight-detail-item');
+        if (flightDetail.length > 0) {
+            flightData.destination = $('p:contains("Destination") strong', flightDetail).parent().text().trim().replace('Destination:', '').trim();
+            flightData.airline = $('h4.modal-title a', flightDetail).text().trim();
+            flightData.flight_number = $('p:contains("Flight Number") strong', flightDetail).parent().text().trim().replace('Flight Number:', '').trim();
+            flightData.date = $('p:contains("Date") strong', flightDetail).parent().text().trim().replace('Date:', '').trim();
+            flightData.scheduled_time = $('p:contains("Scheduled Time") strong', flightDetail).parent().text().trim().replace('Scheduled Time:', '').trim();
+            flightData.status = $('p:contains("Status") strong', flightDetail).parent().text().trim().replace('Status:', '').trim();
+            flightData.gate = $('p:contains("Gate") strong', flightDetail).parent().text().trim().replace('Gate:', '').trim();
+        }
+
+        return NextResponse.json({ flight: flightData }, { status: 200 });
+    } catch (error) {
+        console.error(`Error fetching data for flight ${flightNumber}:`, error);
+        return NextResponse.json({ error: 'Failed to fetch flight data.' }, { status: 500 });
+    }
 }
